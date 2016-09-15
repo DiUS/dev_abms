@@ -7,7 +7,7 @@ const {
   DEVELOPER_STATE_REST } = developer
 
 const DEVS_POOL_CAPACITY = 5
-const TASKS_POOL_CAPACITY = 100
+const TASKS_POOL_CAPACITY = 25
 const SIMULATION_STEPS = 9600 // 9600 minutes = 20 working days
 
 const getTaskFromPool = (pool) => {
@@ -66,6 +66,18 @@ run(SIMULATION_STEPS, tasksPool, devs)
 /* eslint-disable no-console */
 console.log('RESULTS')
 devs.forEach((dev, i) => {
-  console.log(`Developer:${i} - tasks done: ${dev.doneTasks.length}`)
+  let avgDifficulty = dev.doneTasks.reduce((res, task) => {
+    return res + task.difficulty
+  }, 0)
+
+  if (dev.doneTasks.length) {
+    avgDifficulty = Math.round(avgDifficulty * 100 / dev.doneTasks.length) / 100
+  } else {
+    avgDifficulty = 0
+  }
+
+  console.log(`Developer:${i} - experience: ${dev.experience}\t
+    tasks done: ${dev.doneTasks.length}\t
+    average difficulty: ${avgDifficulty}\n`)
 })
 /* eslint-enable no-console */

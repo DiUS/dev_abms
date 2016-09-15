@@ -1,4 +1,6 @@
 const uuid = require('node-uuid')
+const randgen = require('randgen')
+const times = require('lodash.times')
 
 const DEVELOPER_STATE_BUSY = 'busy'
 const DEVELOPER_STATE_IDLE = 'idle'
@@ -10,13 +12,21 @@ exports.DEVELOPER_STATE_REST = DEVELOPER_STATE_REST
 
 // random developer's experience [0.1 .. 1]
 // 0.1 - lowest experience level, 1 - highest experience level
-const experience = () => {
-  return 0.5
-}
+const experience = () => randgen.rlist(times(10, i => (i + 1)/10))
 
-// random rest time in minutes with mean 20 minutes [15 .. 60]
+// random rest time in minutes with mean 20 minutes
 const estimateRestTime = () => {
-  return 20
+  const mean = 20
+  const deviation = 20
+  let restTime = randgen.rnorm(mean, deviation)
+
+  if (restTime < 0) {
+    restTime = 1
+  } else if (restTime > 60) {
+    restTime = 60
+  }
+
+  return Math.floor(restTime)
 }
 
 const estimateWorkTime = (dev, task) => {

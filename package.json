@@ -12,7 +12,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "node-uuid": "^1.4.7"
+    "lodash.constant": "^3.0.0",
+    "lodash.range": "^3.2.0",
+    "lodash.times": "^4.3.2",
+    "node-uuid": "^1.4.7",
+    "randgen": "^0.1.0"
   },
   "devDependencies": {
     "eslint": "^3.5.0"
