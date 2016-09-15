@@ -15,9 +15,24 @@ const getTaskFromPool = (pool) => {
     return -1
   }
 
-  const min = 0
-  const max = pool.length
-  return Math.floor(Math.random() * (max - min)) + min
+  let maxIdx = 0
+  let maxVal = pool[ maxIdx ]
+  if (maxVal == 1) {
+    return maxIdx
+  }
+
+  for (let i = 1; i < pool.length; i++) {
+    if (pool[ i ] > maxVal) {
+      maxVal = pool[ i ]
+      maxIdx = i
+
+      if (maxVal == 1) {
+        return maxIdx
+      }
+    }
+  }
+
+  return maxIdx
 }
 
 const step = (step, tasks, devs) => {
@@ -32,6 +47,8 @@ const step = (step, tasks, devs) => {
         if (taskIdx > -1) {
           const task = tasks.splice(taskIdx, 1)
           developer.startTask(dev, task[ 0 ])
+        } else {
+          developer.idle(dev)
         }
         break
       }
@@ -77,6 +94,8 @@ devs.forEach((dev, i) => {
   }
 
   console.log(`Developer:${i} - experience: ${dev.experience}\t
+    idle time total: ${dev.idleTimeTotal} (includes rest time)\t
+    rest time total: ${dev.restTimeTotal}\t
     tasks done: ${dev.doneTasks.length}\t
     average difficulty: ${avgDifficulty}\n`)
 })

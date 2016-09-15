@@ -43,13 +43,16 @@ exports.rest = (dev) => {
     dev.task = null
     dev.state = DEVELOPER_STATE_REST
     dev.restingTimeOut = estimateRestTime()
+    return
   }
 
   if (dev.restingTimeOut > 0) {
     dev.restingTimeOut--
+    dev.restTimeTotal++
   } else {
     dev.state = DEVELOPER_STATE_IDLE
   }
+  dev.idleTimeTotal++
 }
 
 exports.startTask = (dev, task) => {
@@ -67,6 +70,8 @@ exports.work = (dev) => {
   dev.workingTimeOut--
 }
 
+exports.idle = (dev) => dev.idleTimeTotal++
+
 exports.generate = (givenExperience) => ({
   id: uuid.v4(),
   experience: givenExperience || experience(),
@@ -75,6 +80,7 @@ exports.generate = (givenExperience) => ({
   task: null,
   state: DEVELOPER_STATE_IDLE,
   idleTimeTotal: 0,
+  restTimeTotal: 0,
   doneTasks: []
 })
 
