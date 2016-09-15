@@ -7,7 +7,7 @@ const {
   DEVELOPER_STATE_REST } = developer
 
 const DEVS_POOL_CAPACITY = 5
-const TASKS_POOL_CAPACITY = 100
+const TASKS_POOL_CAPACITY = 10
 const SIMULATION_STEPS = 9600 // 9600 minutes = 20 working days
 
 const getTaskFromPool = (pool) => {
@@ -54,6 +54,6 @@ const run = (simulationSteps, tasks, devs) => {
 
 let tasksPool = task.seedTasks(TASKS_POOL_CAPACITY)
 let devs = developer.seedDevs(DEVS_POOL_CAPACITY)
-
-run(SIMULATION_STEPS, tasksPool, devs)
-console.log(devs);
+console.log(tasksPool)
+console.log(devs)
+// run(SIMULATION_STEPS, tasksPool, devs)
