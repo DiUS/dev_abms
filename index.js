@@ -1,5 +1,7 @@
 const task = require('./task')
 const developer = require('./developer')
+const randgen = require('randgen')
+const range = require('lodash.range')
 
 const {
   DEVELOPER_STATE_IDLE,
@@ -9,6 +11,15 @@ const {
 const DEVS_POOL_CAPACITY = 5
 const TASKS_POOL_CAPACITY = 25
 const SIMULATION_STEPS = 9600 // 9600 minutes = 20 working days
+
+const DEBUG = false
+const AGILE = 'agile'
+const WATERFALL = 'waterfall'
+const mode = process.argv[ 2 ]
+
+if (mode !== WATERFALL && mode !== AGILE) {
+  throw new Error(`Unknow mode ${mode}`)
+}
 
 const getTaskFromPool = (pool) => {
   if (!pool || !pool.length) {
@@ -35,6 +46,8 @@ const getTaskFromPool = (pool) => {
   return maxIdx
 }
 
+const generateNewTasks = () => task.seedTasks(randgen.rlist(range(5, 21, 1)))
+
 const step = (step, tasks, devs) => {
   devs.forEach(dev => {
     switch (dev.state) {
@@ -60,29 +73,52 @@ const step = (step, tasks, devs) => {
         throw new Error(`Unknown developer state ${dev.state}`)
     }
   })
-  /* eslint-disable no-console */
-  console.log(`STEP: ${step}`)
-  console.log(devs)
-  console.log(tasks.length)
-  console.log('==============')
-  /* eslint-enable no-console */
+
+  if (DEBUG) {
+    /* eslint-disable no-console */
+    console.log(`STEP: ${step}`)
+    console.log(devs)
+    console.log('==============')
+    /* eslint-enable no-console */
+  }
 }
 
 const run = (simulationSteps, tasks, devs) => {
   let currentStep = simulationSteps
+  let newTasksArrival = currentStep - randgen.rlist(range(8 * 60, 21 * 60, 60))
+
   while (currentStep--) {
+    if (newTasksArrival == currentStep) {
+      if (mode == AGILE) {
+        tasks = tasks.concat(generateNewTasks())
+      } else {
+        waterfallTasks = waterfallTasks.concat(generateNewTasks())
+      }
+
+      newTasksArrival = currentStep - randgen.rlist(range(8 * 60, 21 * 60, 60))
+    }
+
+    if (mode == WATERFALL && (currentStep % (80 * 60)) === 0) {
+      tasks = tasks.concat(waterfallTasks.splice(0, TASKS_POOL_CAPACITY))
+    }
+
     step(simulationSteps - currentStep, tasks, devs)
   }
 }
 
 let tasksPool = task.seedTasks(TASKS_POOL_CAPACITY)
+let waterfallTasks = []
 let devs = developer.seedDevs(DEVS_POOL_CAPACITY)
 
 run(SIMULATION_STEPS, tasksPool, devs)
 
 /* eslint-disable no-console */
-console.log('RESULTS')
+console.log(`RESULTS for mode: ${mode}`)
+let totalTasksDone = 0
+
 devs.forEach((dev, i) => {
+  totalTasksDone += dev.doneTasks.length
+
   let avgDifficulty = dev.doneTasks.reduce((res, task) => {
     return res + task.difficulty
   }, 0)
@@ -93,10 +129,11 @@ devs.forEach((dev, i) => {
     avgDifficulty = 0
   }
 
-  console.log(`Developer:${i} - experience: ${dev.experience}\t
+  console.log(`Developer:${i} - experience: ${Math.round(dev.experience * 100) / 100}\t
     idle time total: ${dev.idleTimeTotal} (includes rest time)\t
     rest time total: ${dev.restTimeTotal}\t
     tasks done: ${dev.doneTasks.length}\t
     average difficulty: ${avgDifficulty}\n`)
 })
+console.log(`Total tasks done: ${totalTasksDone}`)
 /* eslint-enable no-console */

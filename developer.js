@@ -1,18 +1,16 @@
 const uuid = require('node-uuid')
 const randgen = require('randgen')
-const times = require('lodash.times')
+const range = require('lodash.range')
 
 const DEVELOPER_STATE_BUSY = 'busy'
 const DEVELOPER_STATE_IDLE = 'idle'
 const DEVELOPER_STATE_REST = 'rest'
 
-exports.DEVELOPER_STATE_BUSY = DEVELOPER_STATE_BUSY
-exports.DEVELOPER_STATE_IDLE = DEVELOPER_STATE_IDLE
-exports.DEVELOPER_STATE_REST = DEVELOPER_STATE_REST
+// TODO: re-factor module to either OOP or Functional style
 
 // random developer's experience [0.1 .. 1]
 // 0.1 - lowest experience level, 1 - highest experience level
-const experience = () => randgen.rlist(times(10, i => (i + 1)/10))
+const experience = () => randgen.rlist(range(0.1, 1.1, 0.1))
 
 // random rest time in minutes with mean 20 minutes
 const estimateRestTime = () => {
@@ -94,3 +92,7 @@ exports.seedDevs = (capacity) => {
 
   return devs
 }
+
+exports.DEVELOPER_STATE_BUSY = DEVELOPER_STATE_BUSY
+exports.DEVELOPER_STATE_IDLE = DEVELOPER_STATE_IDLE
+exports.DEVELOPER_STATE_REST = DEVELOPER_STATE_REST
