@@ -7,21 +7,20 @@ const {
   DEVELOPER_STATE_REST } = developer
 
 const DEVS_POOL_CAPACITY = 5
-const TASKS_POOL_CAPACITY = 10
+const TASKS_POOL_CAPACITY = 100
 const SIMULATION_STEPS = 9600 // 9600 minutes = 20 working days
 
 const getTaskFromPool = (pool) => {
   if (!pool || !pool.length) {
-    return
+    return -1
   }
 
   const min = 0
   const max = pool.length
-  const i = Math.floor(Math.random() * (max - min + 1)) + min
-  return pool[ i ]
+  return Math.floor(Math.random() * (max - min)) + min
 }
 
-const step = (tasks, devs) => {
+const step = (step, tasks, devs) => {
   devs.forEach(dev => {
     switch (dev.state) {
       case DEVELOPER_STATE_BUSY: {
@@ -29,9 +28,10 @@ const step = (tasks, devs) => {
         break
       }
       case DEVELOPER_STATE_IDLE: {
-        const task = getTaskFromPool(tasks)
-        if (task) {
-          developer.startTask(dev, task)
+        const taskIdx = getTaskFromPool(tasks)
+        if (taskIdx > -1) {
+          const task = tasks.splice(taskIdx, 1)
+          developer.startTask(dev, task[ 0 ])
         }
         break
       }
@@ -43,17 +43,29 @@ const step = (tasks, devs) => {
         throw new Error(`Unknown developer state ${dev.state}`)
     }
   })
+  /* eslint-disable no-console */
+  console.log(`STEP: ${step}`)
+  console.log(devs)
+  console.log(tasks.length)
+  console.log('==============')
+  /* eslint-enable no-console */
 }
 
 const run = (simulationSteps, tasks, devs) => {
   let currentStep = simulationSteps
   while (currentStep--) {
-    step(tasks, devs)
+    step(simulationSteps - currentStep, tasks, devs)
   }
 }
 
 let tasksPool = task.seedTasks(TASKS_POOL_CAPACITY)
 let devs = developer.seedDevs(DEVS_POOL_CAPACITY)
-console.log(tasksPool)
-console.log(devs)
-// run(SIMULATION_STEPS, tasksPool, devs)
+
+run(SIMULATION_STEPS, tasksPool, devs)
+
+/* eslint-disable no-console */
+console.log('RESULTS')
+devs.forEach((dev, i) => {
+  console.log(`Developer:${i} - tasks done: ${dev.doneTasks.length}`)
+})
+/* eslint-enable no-console */

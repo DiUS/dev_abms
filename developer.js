@@ -20,8 +20,11 @@ const estimateRestTime = () => {
 }
 
 const estimateWorkTime = (dev, task) => {
-  const time = (task.difficulty / dev.experience + 10) * 60
-  return time
+  const min = -0.5
+  const max = 1.5
+  const timeRandomisation = Math.floor(Math.random() * (max - min + 1)) + min
+  const time = (task.difficulty / dev.experience + timeRandomisation) * 60
+  return Math.floor(time)
 }
 
 exports.rest = (dev) => {
