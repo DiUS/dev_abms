@@ -8,8 +8,8 @@ Every step of simulation process represents `one minute` of real world
 ## Developer
 Developer agent has the following properties:
 * `id` unique identifier of developer
-* `experience` developer experience in interval [0.1 .. 1] (highest value
-means highest experience level)
+* `experience` developer experience in interval [0.1 .. 1] \(highest value
+means highest experience level\)
 * `state` developer's state, can be one of the following values:
   * `busy` developer is working at task
   * `idle` developer is not working at any task or resting
@@ -40,11 +40,11 @@ where
 ## Task
 Task agent has the following properties:
 * `id` unique identifier of task
-* `difficulty` task difficulty in interval [1 .. 10] (highest value means highest difficulty level)
+* `difficulty` task difficulty in interval [1 .. 10] \(highest value means highest difficulty level\)
 * `type` there are two types of tasks in the system:
   * `bug` with probability 0.6
   * `feature` with probability 0.4
-* `priority` with value in interval [0.1 .. 1] (highest value means highest level of priority), random value with normal distribution
+* `priority` with value in interval [0.1 .. 1] \(highest value means highest level of priority\), random value with normal distribution
 * `created` timestamp of task creation
 
 # Environments
@@ -79,7 +79,6 @@ As soon as dependencies installed you can run the following command to start mod
 ```
 # npm start <environment>
 ```
-Only 2 environments are supported: `agile`, `waterfall`
 
 # TODO
 * Re-factor developer module
