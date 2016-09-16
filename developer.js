@@ -27,6 +27,7 @@ const estimateRestTime = () => {
   return Math.floor(restTime)
 }
 
+// TODO: move this calculation to a separate module
 const estimateWorkTime = (dev, task) => {
   const min = -0.5
   const max = 1.5
@@ -73,10 +74,12 @@ exports.idle = (dev) => dev.idleTimeTotal++
 exports.generate = (givenExperience) => ({
   id: uuid.v4(),
   experience: givenExperience || experience(),
+  // TODO: there should be only one time out which depends on stateß
   restingTimeOut: 0, // shows how many minutes left to rest
   workingTimeOut: 0, // shows how many minutes developer will be working
   task: null,
   state: DEVELOPER_STATE_IDLE,
+  // TODO: move data accumulators to a separate module
   idleTimeTotal: 0,
   restTimeTotal: 0,
   doneTasks: []
