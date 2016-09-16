@@ -1,9 +1,6 @@
 # dev_abms
 Agent Based Modelling System of software development process
 
-# Model units
-Every step of simulation process represents `one minute` of real world
-
 # Agents
 ## Developer
 Developer agent has the following properties:
