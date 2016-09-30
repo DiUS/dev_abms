@@ -1,5 +1,5 @@
-const task = require('./task')
-const developer = require('./developer')
+const task = require('./src/task')
+const developer = require('./src/developer')
 const randgen = require('randgen')
 const range = require('lodash.range')
 
