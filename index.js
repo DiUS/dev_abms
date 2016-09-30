@@ -48,31 +48,62 @@ const getTaskFromPool = (pool) => {
 
 const generateNewTasks = () => task.seedTasks(randgen.rlist(range(5, 21, 1)))
 
-const step = (step, tasks, devs) => {
-  devs.forEach(dev => {
-    switch (dev.state) {
-      case DEVELOPER_STATE_BUSY: {
-        developer.work(dev)
-        break
-      }
-      case DEVELOPER_STATE_IDLE: {
-        const taskIdx = getTaskFromPool(tasks)
-        if (taskIdx > -1) {
-          const task = tasks.splice(taskIdx, 1)
-          developer.startTask(dev, task[ 0 ])
-        } else {
-          developer.idle(dev)
-        }
-        break
-      }
-      case DEVELOPER_STATE_REST: {
+const devStep = (dev, tasks) => {
+  switch (dev.state) {
+    case DEVELOPER_STATE_BUSY: {
+      if (dev.timeOut == 0) {
         developer.rest(dev)
-        break
+      } else {
+        developer.work(dev)
       }
-      default:
-        throw new Error(`Unknown developer state ${dev.state}`)
+      break
     }
-  })
+    case DEVELOPER_STATE_IDLE: {
+      const taskIdx = getTaskFromPool(tasks)
+      if (taskIdx > -1) {
+        const task = tasks.splice(taskIdx, 1)
+        developer.startTask(dev, task[ 0 ])
+      } else {
+        developer.idle(dev)
+      }
+      break
+    }
+    case DEVELOPER_STATE_REST: {
+      developer.rest(dev)
+      break
+    }
+    default:
+      throw new Error(`Unknown developer state ${dev.state}`)
+  }
+}
+
+const devMapper = (dev, tasks) => {
+  switch (dev.state) {
+    case DEVELOPER_STATE_BUSY: {
+      if (dev.timeOut == 0) {
+        return developer.restF(dev)
+      }
+      return developer.workF(dev)
+    }
+    case DEVELOPER_STATE_IDLE: {
+      const taskIdx = getTaskFromPool(tasks)
+      if (taskIdx > -1) {
+        const task = tasks.splice(taskIdx, 1)
+        return developer.startTaskF(dev, task[ 0 ])
+      }
+      return developer.idleF(dev)
+    }
+    case DEVELOPER_STATE_REST: {
+      return developer.restF(dev)
+    }
+    default:
+      throw new Error(`Unknown developer state ${dev.state}`)
+  }
+}
+
+const step = (step, tasks, devs) => {
+  devs.forEach(dev => devStep(dev, tasks))
+  // devs = devs.map(dev => devMapper(dev, tasks))
 
   if (DEBUG) {
     /* eslint-disable no-console */

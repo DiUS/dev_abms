@@ -25,6 +25,30 @@ exports.rest = (dev) => {
   dev.idleTimeTotal++
 }
 
+exports.restF = (dev) => {
+  if (dev.state == DEVELOPER_STATE_BUSY) {
+    return Object.assign({}, dev, {
+      task: null,
+      doneTasks: dev.doneTasks.concat(dev.task),
+      state: DEVELOPER_STATE_REST,
+      timeOut: estimateRestTime({})
+    })
+  }
+
+  if (dev.timeOut > 0) {
+    return Object.assign({}, dev, {
+      timeOut: dev.timeOut - 1,
+      restTimeTotal: dev.restTimeTotal + 1,
+      idleTimeTotal: dev.idleTimeTotal + 1
+    })
+  }
+
+  return Object.assign({}, dev, {
+    state: DEVELOPER_STATE_IDLE,
+    idleTimeTotal: dev.idleTimeTotal + 1
+  })
+}
+
 exports.startTask = (dev, task) => {
   dev.state = DEVELOPER_STATE_BUSY
   dev.task = task
@@ -34,16 +58,22 @@ exports.startTask = (dev, task) => {
   })
 }
 
-exports.work = (dev) => {
-  if (dev.timeOut == 0) {
-    exports.rest(dev)
-    return
-  }
-
-  dev.timeOut--
+exports.startTaskF = (dev, task) => {
+  return Object.assign({}, dev, {
+    state: DEVELOPER_STATE_BUSY,
+    task: task,
+    timeOut: estimateWorkTime({
+      devExperience: dev.experience,
+      taskDifficulty: task.difficulty
+    })
+  })
 }
 
+exports.work = (dev) => dev.timeOut--
+exports.workF = (dev) => Object.assign({}, dev, {timeOut: dev.timeOut - 1})
+
 exports.idle = (dev) => dev.idleTimeTotal++
+exports.idleF = (dev) => Object.assign({}, dev, {idleTimeTotal: dev.idleTimeTotal + 1})
 
 exports.generate = (givenExperience) => ({
   id: uuid.v4(),
