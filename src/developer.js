@@ -12,12 +12,12 @@ exports.rest = (dev) => {
     dev.doneTasks.push(dev.task)
     dev.task = null
     dev.state = DEVELOPER_STATE_REST
-    dev.restingTimeOut = estimateRestTime({})
+    dev.timeOut = estimateRestTime({})
     return
   }
 
-  if (dev.restingTimeOut > 0) {
-    dev.restingTimeOut--
+  if (dev.timeOut > 0) {
+    dev.timeOut--
     dev.restTimeTotal++
   } else {
     dev.state = DEVELOPER_STATE_IDLE
@@ -28,19 +28,19 @@ exports.rest = (dev) => {
 exports.startTask = (dev, task) => {
   dev.state = DEVELOPER_STATE_BUSY
   dev.task = task
-  dev.workingTimeOut = estimateWorkTime({
+  dev.timeOut = estimateWorkTime({
     devExperience: dev.experience,
     taskDifficulty: task.difficulty
   })
 }
 
 exports.work = (dev) => {
-  if (dev.workingTimeOut == 0) {
+  if (dev.timeOut == 0) {
     exports.rest(dev)
     return
   }
 
-  dev.workingTimeOut--
+  dev.timeOut--
 }
 
 exports.idle = (dev) => dev.idleTimeTotal++
@@ -48,9 +48,7 @@ exports.idle = (dev) => dev.idleTimeTotal++
 exports.generate = (givenExperience) => ({
   id: uuid.v4(),
   experience: givenExperience || devExperience(),
-  // TODO: there should be only one time out which depends on stateß
-  restingTimeOut: 0, // shows how many minutes left to rest
-  workingTimeOut: 0, // shows how many minutes developer will be working
+  timeOut: 0,
   task: null,
   state: DEVELOPER_STATE_IDLE,
   // TODO: move data accumulators to a separate module
