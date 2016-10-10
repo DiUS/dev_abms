@@ -78,7 +78,7 @@ As soon as dependencies installed you can run the following command to start mod
 ```
 
 # TODO
-* Re-factor developer module
+~~* Re-factor developer module~~
 * Assign tasks by priority and created timestamp
 * Add CLI options
   * to turn on/off debug mode
