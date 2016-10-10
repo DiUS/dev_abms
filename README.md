@@ -12,8 +12,7 @@ means highest experience level\)
   * `idle` developer is not working at any task or resting
   * `rest` developer has a timeout between tasks
 * `task` the task developer is working at now
-* `workingTimeOut` time left to done task
-* `restingTimeOut` time left to rest
+* `timeout` time left to complete task/rest
 * `idleTimeTotal` accumulates total idle time (includes rest time)
 * `restTimeTotal` accumulates total rest time
 * `doneTasks` accumulates done tasks
