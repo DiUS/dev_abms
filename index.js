@@ -48,53 +48,24 @@ const getTaskFromPool = (pool) => {
 
 const generateNewTasks = () => task.seedTasks(randgen.rlist(range(5, 21, 1)))
 
-const devStep = (dev, tasks) => {
-  switch (dev.state) {
-    case DEVELOPER_STATE_BUSY: {
-      if (dev.timeOut == 0) {
-        developer.rest(dev)
-      } else {
-        developer.work(dev)
-      }
-      break
-    }
-    case DEVELOPER_STATE_IDLE: {
-      const taskIdx = getTaskFromPool(tasks)
-      if (taskIdx > -1) {
-        const task = tasks.splice(taskIdx, 1)
-        developer.startTask(dev, task[ 0 ])
-      } else {
-        developer.idle(dev)
-      }
-      break
-    }
-    case DEVELOPER_STATE_REST: {
-      developer.rest(dev)
-      break
-    }
-    default:
-      throw new Error(`Unknown developer state ${dev.state}`)
-  }
-}
-
 const devMapper = (dev, tasks) => {
   switch (dev.state) {
     case DEVELOPER_STATE_BUSY: {
       if (dev.timeOut == 0) {
-        return developer.restF(dev)
+        return developer.rest(dev)
       }
-      return developer.workF(dev)
+      return developer.work(dev)
     }
     case DEVELOPER_STATE_IDLE: {
       const taskIdx = getTaskFromPool(tasks)
       if (taskIdx > -1) {
         const task = tasks.splice(taskIdx, 1)
-        return developer.startTaskF(dev, task[ 0 ])
+        return developer.startTask(dev, task[ 0 ])
       }
-      return developer.idleF(dev)
+      return developer.idle(dev)
     }
     case DEVELOPER_STATE_REST: {
-      return developer.restF(dev)
+      return developer.rest(dev)
     }
     default:
       throw new Error(`Unknown developer state ${dev.state}`)
@@ -102,8 +73,7 @@ const devMapper = (dev, tasks) => {
 }
 
 const step = (step, tasks, devs) => {
-  devs.forEach(dev => devStep(dev, tasks))
-  // devs = devs.map(dev => devMapper(dev, tasks))
+  devs = devs.map(dev => devMapper(dev, tasks))
 
   if (DEBUG) {
     /* eslint-disable no-console */
@@ -112,6 +82,8 @@ const step = (step, tasks, devs) => {
     console.log('==============')
     /* eslint-enable no-console */
   }
+
+  return devs
 }
 
 const run = (simulationSteps, tasks, devs) => {
@@ -133,15 +105,17 @@ const run = (simulationSteps, tasks, devs) => {
       tasks = tasks.concat(waterfallTasks.splice(0, TASKS_POOL_CAPACITY))
     }
 
-    step(simulationSteps - currentStep, tasks, devs)
+    devs = step(simulationSteps - currentStep, tasks, devs)
   }
+
+  return devs
 }
 
 let tasksPool = task.seedTasks(TASKS_POOL_CAPACITY)
 let waterfallTasks = []
 let devs = developer.seedDevs(DEVS_POOL_CAPACITY)
 
-run(SIMULATION_STEPS, tasksPool, devs)
+devs = run(SIMULATION_STEPS, tasksPool, devs)
 
 /* eslint-disable no-console */
 console.log(`RESULTS for mode: ${mode}`)

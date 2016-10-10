@@ -5,27 +5,7 @@ const DEVELOPER_STATE_BUSY = 'busy'
 const DEVELOPER_STATE_IDLE = 'idle'
 const DEVELOPER_STATE_REST = 'rest'
 
-// TODO: re-factor module to either OOP or Functional style
-
 exports.rest = (dev) => {
-  if (dev.state == DEVELOPER_STATE_BUSY) {
-    dev.doneTasks.push(dev.task)
-    dev.task = null
-    dev.state = DEVELOPER_STATE_REST
-    dev.timeOut = estimateRestTime({})
-    return
-  }
-
-  if (dev.timeOut > 0) {
-    dev.timeOut--
-    dev.restTimeTotal++
-  } else {
-    dev.state = DEVELOPER_STATE_IDLE
-  }
-  dev.idleTimeTotal++
-}
-
-exports.restF = (dev) => {
   if (dev.state == DEVELOPER_STATE_BUSY) {
     return Object.assign({}, dev, {
       task: null,
@@ -50,15 +30,6 @@ exports.restF = (dev) => {
 }
 
 exports.startTask = (dev, task) => {
-  dev.state = DEVELOPER_STATE_BUSY
-  dev.task = task
-  dev.timeOut = estimateWorkTime({
-    devExperience: dev.experience,
-    taskDifficulty: task.difficulty
-  })
-}
-
-exports.startTaskF = (dev, task) => {
   return Object.assign({}, dev, {
     state: DEVELOPER_STATE_BUSY,
     task: task,
@@ -69,11 +40,9 @@ exports.startTaskF = (dev, task) => {
   })
 }
 
-exports.work = (dev) => dev.timeOut--
-exports.workF = (dev) => Object.assign({}, dev, {timeOut: dev.timeOut - 1})
+exports.work = (dev) => Object.assign({}, dev, {timeOut: dev.timeOut - 1})
 
-exports.idle = (dev) => dev.idleTimeTotal++
-exports.idleF = (dev) => Object.assign({}, dev, {idleTimeTotal: dev.idleTimeTotal + 1})
+exports.idle = (dev) => Object.assign({}, dev, {idleTimeTotal: dev.idleTimeTotal + 1})
 
 exports.generate = (givenExperience) => ({
   id: uuid.v4(),

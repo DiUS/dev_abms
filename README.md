@@ -87,3 +87,4 @@ As soon as dependencies installed you can run the following command to start mod
   * to set tasks pool capacity
   * to set developers pool capacity
 * Add CLI help
+* Add unit tests
